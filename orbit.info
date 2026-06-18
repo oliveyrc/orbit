@@ -1,0 +1,6 @@
+name: Orbit
+type: module
+description: Provides base Orbit suite functionality.
+package: Orbit
+core_version_requirement: ^11
+php: 8.4
