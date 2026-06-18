@@ -6,3 +6,33 @@
  */
 
 declare(strict_types=1);
+
+
+/**
+ * Common footer function for Oyster admin pages.
+ *
+ * @param bool $string
+ *   If TRUE, return a rendered string instead of a render array.
+ */
+function orbit_page_footer($string = FALSE) {
+  $build['footer'] = [
+    '#markup' => '<img src="' . orbit_logo_svg_url() . '" alt="Oyster design logo" align="right" width="148" height="45" />',
+  ];
+
+  if ($string) {
+    $build = \Drupal::service('renderer')->render($build);
+  }
+  return $build;
+}
+
+/**
+ * Undocumented function
+ *
+ * @return string
+ */
+function orbit_logo_svg_url(): string {
+  $module_path = \Drupal::service('extension.list.module')
+    ->getPath('orbit');
+  return \Drupal::service('file_url_generator')
+    ->generateString($module_path . '/assets/logo.svg');
+}
