@@ -1,0 +1,11 @@
+{
+    "name": "oliveyrc/orbit",
+    "type": "drupal-custom-module",
+    "description": "Orbit development - Contains commonly used functions and initial install/setup code.",
+    "require": {
+        "joshtronic/php-loremipsum": "^2.1",
+        "php": ">=8.2"
+    },
+    "package": "oliveyrc/orbit",
+    "minimum-stability": "dev"
+}
