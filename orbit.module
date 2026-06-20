@@ -16,8 +16,9 @@ declare(strict_types=1);
  */
 function orbit_page_footer($string = FALSE) {
   $build['footer'] = [
-    '#markup' => '<img src="' . orbit_logo_svg_url() . '" alt="Oyster design logo" align="right" width="148" height="45" />',
+    '#markup' => '<div class="orbit-footer gin-layer-wrapper"><img src="' . orbit_logo_svg_url() . '" alt="Oyster design logo" align="right" width="148" height="45" /></div>',
   ];
+  $build['#attached']['library'][] = 'orbit/base';
 
   if ($string) {
     $build = \Drupal::service('renderer')->render($build);
