@@ -7,7 +7,6 @@
 
 declare(strict_types=1);
 
-
 /**
  * Common footer function for Oyster admin pages.
  *
@@ -27,7 +26,7 @@ function orbit_page_footer($string = FALSE) {
 }
 
 /**
- * Undocumented function
+ * Undocumented function.
  *
  * @return string
  */
