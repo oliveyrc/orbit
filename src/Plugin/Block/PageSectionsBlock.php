@@ -14,63 +14,67 @@ use Drupal\node\Entity\Node;
  * Provides a 'Page sections' block.
  */
 #[Block(
-  id: "page_sections_block",
-  admin_label: new TranslatableMarkup("Page sections block"),
-  category: new TranslatableMarkup("Orbit"),
+    id: "page_sections_block",
+    admin_label: new TranslatableMarkup("Page sections block"),
+    category: new TranslatableMarkup("Orbit"),
 )]
-class PageSectionsBlock extends BlockBase {
+class PageSectionsBlock extends BlockBase
+{
 
-  /**
-   * {@inheritdoc}
-   */
-  public function build() {
-    $build = [];
-    $node = \Drupal::routeMatch()->getParameter('node');
-    $node_revision = \Drupal::routeMatch()->getParameter('node_revision');
-    $node_preview = \Drupal::routeMatch()->getParameter('node_preview');
+    /**
+     * {@inheritdoc}
+     */
+    public function build()
+    {
+        $build = [];
+        $node = \Drupal::routeMatch()->getParameter('node');
+        $node_revision = \Drupal::routeMatch()->getParameter('node_revision');
+        $node_preview = \Drupal::routeMatch()->getParameter('node_preview');
 
-    if (!empty($node_revision)) {
-      $node = \Drupal::entityTypeManager()
-        ->getStorage('node')
-        ->loadRevision($node_revision);
-    }
-    elseif (!empty($node_preview)) {
-      $node = $node_preview;
-    }
-    elseif (is_string($node)) {
-      $node = Node::load($node);
-    }
+        if (!empty($node_revision)) {
+            $node = \Drupal::entityTypeManager()
+                ->getStorage('node')
+                ->loadRevision($node_revision);
+        }
+        elseif (!empty($node_preview)) {
+            $node = $node_preview;
+        }
+        elseif (is_string($node)) {
+            $node = Node::load($node);
+        }
 
-    if ($node && $node->hasField('field_page_sections') && !$node->get('field_page_sections')->isEmpty()) {
-      $build['page_sections_block'] = $node->field_page_sections->view(['label' => 'hidden']);
-      return $build;
-    }
+        if ($node && $node->hasField('field_post_body_content_page_sec') && !$node->get('field_post_body_content_page_sec')->isEmpty()) {
+            $build['page_sections_block'] = $node->field_post_body_content_page_sec->view(['label' => 'hidden']);
+            return $build;
+        }
 
-    return [];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getCacheTags() {
-    $node = \Drupal::routeMatch()->getParameter('node');
-
-    if (is_int($node)) {
-      $node = Node::load($node);
+        return [];
     }
 
-    if (!empty($node)) {
-      return Cache::mergeTags(parent::getCacheTags(), ['node:' . $node->id()]);
+    /**
+     * {@inheritdoc}
+     */
+    public function getCacheTags()
+    {
+        $node = \Drupal::routeMatch()->getParameter('node');
+
+        if (is_int($node)) {
+            $node = Node::load($node);
+        }
+
+        if (!empty($node)) {
+            return Cache::mergeTags(parent::getCacheTags(), ['node:' . $node->id()]);
+        }
+
+        return parent::getCacheTags();
     }
 
-    return parent::getCacheTags();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getCacheContexts() {
-    return Cache::mergeContexts(parent::getCacheContexts(), ['route']);
-  }
+    /**
+     * {@inheritdoc}
+     */
+    public function getCacheContexts()
+    {
+        return Cache::mergeContexts(parent::getCacheContexts(), ['route']);
+    }
 
 }

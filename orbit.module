@@ -7,6 +7,8 @@
 
 declare(strict_types=1);
 
+use joshtronic\LoremIpsum;
+
 /**
  * Common footer function for Oyster admin pages.
  *
@@ -35,4 +37,22 @@ function orbit_logo_svg_url(): string {
     ->getPath('orbit');
   return \Drupal::service('file_url_generator')
     ->generateString($module_path . '/assets/logo.svg');
+}
+
+/**
+ * Implements hook_theme().
+ *
+ * Https://www.drupal.org/docs/theming-drupal/twig-in-drupal/create-custom-twig-templates-for-custom-module.
+ */
+function orbit_theme($existing, $type, $theme, $path): array {
+  return [
+    'field__node__field_additional_body_content' => [
+      'render element' => 'elements',
+      'base hook' => 'field',
+    ],
+    'field__node__field_post_body_content_page_sec' => [
+      'render element' => 'elements',
+      'base hook' => 'field',
+    ],
+  ];
 }
