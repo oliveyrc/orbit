@@ -56,3 +56,34 @@ function orbit_theme($existing, $type, $theme, $path): array {
     ],
   ];
 }
+
+/**
+ * Wrapper function to generate Lorem Ipsum content for other modules.
+ *
+ * @param string $type
+ *   $type Type of Dummy content to return, words/paragraphs.
+ * @param int $count
+ *   $count Number of items to be returned.
+ * @param string $wrapper
+ *   $wrapper What should the returned items be wrapped in.
+ *
+ * @return string
+ *   $out String of dummy LoremIpsum content.
+ */
+function orbit_generate_dummy_text(string $type = 'paragraphs', int $count = 3, string $wrapper = 'p'): string
+{
+  $out = '';
+  $lipsum = new LoremIpsum();
+
+  switch ($type) {
+    case 'paragraphs':
+      $out = $lipsum->$type($count, $wrapper);
+      break;
+
+    case 'words':
+      $out = $lipsum->$type($count);
+      break;
+  }
+
+  return $out;
+}
