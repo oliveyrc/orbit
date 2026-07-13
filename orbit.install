@@ -2,7 +2,42 @@
 
 /**
  * @file
- * Install, update, and uninstall functions for the orbit module.
+ * Install, update and uninstall functions for the orbit module.
  */
 
 declare(strict_types=1);
+
+use Drupal\Core\Url;
+use Drupal\node\Entity\Node;
+
+function orbit_install() {
+  _orbit_create_404_page();
+}
+
+/**
+ * Create a page with some initial dummy content.
+ */
+function _orbit_create_404_page() {
+
+  // Create Dummy page node and save the nid for future reference.
+  $node = Node::create([
+    'type' => 'basic_page',
+    'title' => '404 Page Not Found',
+    'uid' => 1,
+    'field_body' => [
+      'value' => '
+<strong>Well, this is unexpected…</strong>
+<p>The page you were trying to reach doesn’t seem to be here. It may have moved, or the link may have expired.
+Let\'s get you back on track.</p>
+        ',
+
+      'format' => 'full_html',
+    ],
+  ]);
+  $node->save();
+
+  // Set message to show user.
+  $url = Url::fromRoute('entity.node.canonical', ['node' => $node->id()])->toString();
+  \Drupal::messenger()
+    ->addMessage(t('<a href="@url">@link_text</a> has been created.', ['@url' => $url, '@link_text' => '404 Page Not Found page']));
+}
