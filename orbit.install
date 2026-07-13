@@ -6,33 +6,3 @@
  */
 
 declare(strict_types=1);
-
-use Drupal\Core\Entity\Entity\EntityFormDisplay;
-use Drupal\Core\Entity\Entity\EntityViewDisplay;
-use Drupal\Core\Url;
-use Drupal\node\Entity\Node;
-
-/**
- * Implements hook_install().
- */
-function orbit_install(): void {
-
-}
-
-/**
- * Implements hook_uninstall().
- */
-function orbit_uninstall($is_syncing) {
-  $config = \Drupal::configFactory()
-    ->getEditable('orbit.settings');
-  ;
-
-  // Delete dummy page.
-  $node = Node::load($config->get('dummy_page_nid'));
-  $node->delete();
-
-  // Delete/remove any config settings.
-  $config = \Drupal::configFactory()
-    ->getEditable('orbit.settings')
-    ->delete();
-}

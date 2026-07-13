@@ -17,7 +17,7 @@ use joshtronic\LoremIpsum;
  */
 function orbit_page_footer($string = FALSE) {
   $build['footer'] = [
-    '#markup' => '<div class="orbit-footer gin-layer-wrapper"><img src="' . orbit_logo_svg_url() . '" alt="Oyster design logo" align="right" width="148" height="45" /></div>',
+    '#markup' => '<div class="orbit-footer gin-layer-wrapper">Enhanced with<strong>Orbit</strong></div>',
   ];
   $build['#attached']['library'][] = 'orbit/base';
 
