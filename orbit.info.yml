@@ -7,3 +7,5 @@ php: 8.4
 dependencies:
   - paragraphs:paragraphs
   - pathauto:pathauto
+  - ckeditor5_plugin_pack:ckeditor5_plugin_pack
+  - ckeditor5_plugin_pack_word_count:ckeditor5_plugin_pack_word_count
