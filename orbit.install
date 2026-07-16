@@ -7,37 +7,122 @@
 
 declare(strict_types=1);
 
-use Drupal\Core\Url;
-use Drupal\node\Entity\Node;
-
-function orbit_install() {
-  _orbit_create_404_page();
-}
+use Drupal\block\Entity\Block;
 
 /**
- * Create a page with some initial dummy content.
+ * Implements hook_install().
+ *
+ * - Set the themes up along with settings
+ * - Remove unsed theme
+ * - Set better logging limits
+ * - Uninstall non required profile modules
+ * - Set only admins to create accounts
+ * - Set up the file sanitisation settings
+ * - Remove/Tidy blocks
+ *
+ * @return void
  */
-function _orbit_create_404_page() {
+function orbit_install() {
 
-  // Create Dummy page node and save the nid for future reference.
-  $node = Node::create([
-    'type' => 'basic_page',
-    'title' => '404 Page Not Found',
-    'uid' => 1,
-    'field_body' => [
-      'value' => '
-<strong>Well, this is unexpected…</strong>
-<p>The page you were trying to reach doesn’t seem to be here. It may have moved, or the link may have expired.
-Let\'s get you back on track.</p>
-        ',
+  // Set the default theme to scaffold.
+  \Drupal::configFactory()
+    ->getEditable('system.theme')
+    ->set('default', 'scaffold')
+    ->save();
 
-      'format' => 'full_html',
-    ],
+  // Enable the gin admin theme.
+  \Drupal::configFactory()
+    ->getEditable('system.theme')
+    ->set('admin', 'gin')
+    ->save();
+
+  // Uninstall themes.
+  \Drupal::service('theme_installer')->uninstall(['olivero']);
+
+  // Set defaults for the admin theme.
+  \Drupal::configFactory()
+    ->getEditable('gin.settings')
+    ->set('layout_density', 'medium')
+    ->save();
+  \Drupal::configFactory()
+    ->getEditable('gin.settings')
+    ->set('accent_color', '#36799B')
+    ->save();
+  \Drupal::configFactory()
+    ->getEditable('gin.settings')
+    ->set('preset_accent_color', 'custom')
+    ->save();
+
+  // Increase the saved row limit.
+  \Drupal::configFactory()
+    ->getEditable('dblog.settings')
+    ->set('row_limit', '100000')
+    ->save();
+
+  // Uninstall modules.
+  \Drupal::service('module_installer')->uninstall([
+    'comment',
+    'announcements_feed',
+    'tour',
   ]);
-  $node->save();
 
-  // Set message to show user.
-  $url = Url::fromRoute('entity.node.canonical', ['node' => $node->id()])->toString();
-  \Drupal::messenger()
-    ->addMessage(t('<a href="@url">@link_text</a> has been created.', ['@url' => $url, '@link_text' => '404 Page Not Found page']));
+  // Update user account settings.
+  \Drupal::configFactory()
+    ->getEditable('user.settings')
+    ->set('register', 'admin_only')
+    ->save();
+
+  // File sanitisation settings.
+  \Drupal::configFactory()
+    ->getEditable('file.settings')
+    ->set('filename_sanitization.transliterate', TRUE)
+    ->set('filename_sanitization.replace_whitespace', TRUE)
+    ->set('filename_sanitization.replace_non_alphanumeric', TRUE)
+    ->set('filename_sanitization.deduplicate_separators', TRUE)
+    ->set('filename_sanitization.lowercase', TRUE)
+    ->save();
+
+  // Remove some blocks
+  $blocks_to_remove = [
+    'system_powered_by_block',
+    'node_syndicate_block',
+    'search_form_block',
+    'help_block',
+  ];
+
+  foreach ($blocks_to_remove as $bid) {
+    $blocks = \Drupal::entityTypeManager()->getStorage('block')
+      ->loadByProperties(['plugin' => $bid]);
+    foreach ($blocks as $block) {
+      $block->delete();
+    }
+  }
+
+  $blocks_to_remove = [
+    'scaffold_account_menu',
+    'scaffold_secondary_local_tasks',
+    'scaffold_primary_admin_actions',
+    'scaffold_main_menu',
+    'scaffold_site_branding',
+  ];
+  foreach ($blocks_to_remove as $bid) {
+    $block = Block::load($bid);
+    $block->delete();
+  }
+
+  // Move some blocks.
+  $blocks_to_move = [
+    'scaffold_page_title' => -100,
+    'scaffold_primary_local_tasks' => -99,
+    'scaffold_messages' => -98,
+  ];
+  foreach ($blocks_to_move as $bid_k => $bid_v) {
+    $block = Block::load($bid_k);
+    if ($block) {
+      $block->setRegion('content');
+      $block->setWeight($bid_v);
+      $block->save();
+    }
+  }
+
 }
