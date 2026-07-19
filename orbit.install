@@ -107,7 +107,9 @@ function orbit_install() {
   ];
   foreach ($blocks_to_remove as $bid) {
     $block = Block::load($bid);
-    $block->delete();
+    if ($block) {
+      $block->delete();
+    }
   }
 
   // Move some blocks.
